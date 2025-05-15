@@ -12,27 +12,20 @@ A local multi-agent system using Llama models for various specialized tasks.
 
 ## Setup
 
-1. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+1. Install the multi_agent_system.py script.
+2. Install dependencies in your terminal(pls make sure your python version is updated to 3.8+):
+`pip install fastapi uvicorn python-dotenv requests pydantic jinja2 python-multipart`
 
-2. Download Llama models (GGUF format) from Hugging Face:
+
+3. Download Llama models (GGUF format) from Hugging Face:
    - [llama-3.1b-instruct.Q4_K_M.gguf](https://huggingface.co/TheBloke/Llama-3.1B-Instruct-GGUF/resolve/main/llama-3.1b-instruct.Q4_K_M.gguf)
-   - [codellama-7b.Q4_K_M.gguf](https://huggingface.co/TheBloke/CodeLlama-7B-GGUF/resolve/main/codellama-7b.Q4_K_M.gguf)
+OR use an Open source Endpoint
 
-3. Create a `models` directory and place the downloaded models there:
-```bash
-mkdir models
-# Copy the downloaded .gguf files to the models directory
-```
+4. Regardless of what you do in step 3, setup your model and setup your API Key as an environment variable in an .env. Then change your Endpoint address url in the TextAgent and VisionAgent. *NOTE : This is key as unless you do this the script will not work*
 
-4. Run the server:
-```bash
-python llama_multi_agent_system.py
-```
+5. Run the script
 
-5. Access the web interface at http://localhost:8000
+6. Access the web interface at http://localhost:8000
 
 ## Usage
 
@@ -47,14 +40,14 @@ The system provides a web interface where you can interact with the agents. You 
 
 The system consists of several components:
 
-1. **Router Agent**: Analyzes user requests and routes them to appropriate specialized agents
-2. **Research Agent**: Handles factual questions and research tasks
-3. **Coding Agent**: Generates and explains code
-4. **Analytics Agent**: Performs data analysis and generates insights
+1. **IssueIdentifier Agent**: Analyzes user prompts and matches patterns for common issues to generate a prompt for error in the code
+2. **Coordinator Agent**: Works with the IssueIdentifier Agent and Ticket Agent to 
+3. **Ticket Agent**: Handles tickets and their generation/creation
+4. **Coding Agent**: Generates and explains code
+5. **Analytics Agent**: Performs data analysis and generates insights
 
 Each agent runs on a specialized Llama model optimized for its specific task. The system uses:
 - Llama 3.1B Instruct model for most agents (router, research, analytics)
-- CodeLlama 7B for the coding agent
 
 ## Requirements
 
