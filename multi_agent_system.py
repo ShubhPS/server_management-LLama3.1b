@@ -29,14 +29,14 @@ class Ticket(BaseModel):
     ip: str
     auto_generated: bool = False
     created_at: str = None
-    
+
     def __init__(self, **data):
         super().__init__(**data)
         if not self.ticket_id:
             self.ticket_id = f"ticket_{datetime.now().strftime('%Y%m%d%H%M%S')}"
         if not self.created_at:
             self.created_at = datetime.now().isoformat()
-    
+
     def dict(self):
         return {
             "ticket_id": self.ticket_id,
@@ -461,7 +461,7 @@ class CoordinatorAgent(Agent):
             issue_result = await issue_agent.process({'text': prompt})
 
             if issue_result.get('issue_detected', False):
-                # Create a ticket automatically
+                print(f"Issue detected: {issue_result['issue']}")
                 ticket_result = await ticket_agent.process({
                     'action': 'create',
                     'issue': issue_result['issue'],
@@ -503,7 +503,10 @@ class CoordinatorAgent(Agent):
             "auto_ticket": auto_ticket
         })
 
-        result = {"response": response}
+        result = {
+            "response": response,
+            "result": response  # Add this line to maintain compatibility with existing frontend
+        }
         if auto_ticket:
             result["auto_ticket"] = auto_ticket
 
@@ -513,6 +516,16 @@ class CoordinatorAgent(Agent):
 vision_agent = VisionAgent()
 text_agent = TextAgent()
 ticket_agent = TicketAgent()
+
+issue_detection_agent = IssueDetectionAgent()
+coordinator = CoordinatorAgent()
+coordinator.register_agent(vision_agent)
+coordinator.register_agent(text_agent)
+coordinator.register_agent(ticket_agent)
+coordinator.register_agent(issue_detection_agent)
+
+
+
 
 # Create FastAPI app
 app = FastAPI()
@@ -652,6 +665,8 @@ async def home():
                     <button type="submit">Process Text</button>
                 </form>
                 <div id="textResult" class="result" style="display: none;"></div>
+                <div id="autoTicketNotification" class="result" style="display: none; background-color: #d4edda; border-left: 4px solid #28a745;"></div>
+
             </div>
         </div>
         
@@ -726,12 +741,12 @@ async def home():
                 }
             });
             
+            
             // Text form submission
             document.getElementById('textForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const prompt = document.getElementById('textPrompt').value;
-                
                 const textResult = document.getElementById('textResult');
                 textResult.style.display = 'block';
                 textResult.textContent = 'Processing text...';
@@ -747,10 +762,24 @@ async def home():
                     
                     const data = await res.json();
                     textResult.textContent = data.result;
+                    // In the text form submission handler
+                    if (data.auto_ticket && data.auto_ticket.created) {
+                        const notification = document.getElementById('autoTicketNotification');
+                        notification.style.display = 'block';
+                        notification.innerHTML = `<strong>Auto-generated ticket created:</strong><br>
+                                                 Issue: ${data.auto_ticket.issue}<br>
+                                                 Importance: ${data.auto_ticket.importance}`;
+                        // Refresh the ticket list
+                        loadTickets();
+                    }
+
+                    
+                    
                 } catch (error) {
                     textResult.textContent = `Error: ${error.message}`;
                 }
             });
+
             
             // Ticket form submission
             document.getElementById('ticketForm').addEventListener('submit', async function(e) {
@@ -877,6 +906,18 @@ async def home():
                     ticketList.innerHTML = `Error: ${error.message}`;
                 }
             }
+            // Add this to your script
+            function startTicketPolling() {
+                // Check for new tickets every 10 seconds
+                setInterval(loadTickets, 10000);
+            }
+            
+            // Call this when the page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                loadTickets();
+                startTicketPolling();
+            });
+
         </script>
     </body>
     </html>
@@ -896,16 +937,23 @@ async def process_vision(image: UploadFile = File(...), prompt: str = Form("Desc
     except Exception as e:
         return {"error": str(e)}
 
+
 @app.post("/text")
-async def process_text(prompt: Dict[str, str] = Body(...)):
-    """Process text with text agent"""
+async def process_text(prompt: Dict[str, str] = Body(...), request: Request = None):
+    """Process text with text agent and automatically create tickets if issues detected"""
     try:
-        result = await text_agent.process({
-            "prompt": prompt.get("prompt", "")
+        client_ip = request.client.host if request else "unknown"
+
+        result = await coordinator.process({
+            "type": "text",
+            "prompt": prompt.get("prompt", ""),
+            "ip": client_ip
         })
-        return {"result": result}
+
+        return result
     except Exception as e:
         return {"error": str(e)}
+
 
 @app.post("/ticket")
 async def create_ticket(ticket_data: Dict[str, str] = Body(...), request: Request = None):
