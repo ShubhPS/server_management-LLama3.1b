@@ -21,7 +21,7 @@ A local multi-agent system using Llama models for various specialized tasks.
    - [llama-3.1b-instruct.Q4_K_M.gguf](https://huggingface.co/TheBloke/Llama-3.1B-Instruct-GGUF/resolve/main/llama-3.1b-instruct.Q4_K_M.gguf)
 OR use an Open source Endpoint
 
-4. Regardless of what you do in step 2, setup your model and setup your API Key as an environment variable in an .env. Then change your Endpoint address url in the TextAgent and VisionAgent. *NOTE : This is key as unless you do this the script will not work*
+4. Regardless of what you do in step 3, setup your model and setup your API Key as an environment variable in an .env. Then change your Endpoint address url in the TextAgent and VisionAgent. *NOTE : This is key as unless you do this the script will not work*
 
 5. Run the script
 
