@@ -12,8 +12,8 @@ A local multi-agent system using Llama models for various specialized tasks.
 
 ## Setup
 
-1. Install the multi_agent_system.py script then Install dependencies in your terminal(pls make sure your python version is updated to 3.8+):
-
+1. Install the multi_agent_system.py script.
+2. Install dependencies in your terminal(pls make sure your python version is updated to 3.8+):
 `pip install fastapi uvicorn python-dotenv requests pydantic jinja2 python-multipart`
 
 
