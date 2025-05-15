@@ -13,18 +13,18 @@ A local multi-agent system using Llama models for various specialized tasks.
 ## Setup
 
 1. Install dependencies:
-'pip install fastapi uvicorn python-dotenv requests pydantic jinja2 python-multipart'
+`pip install fastapi uvicorn python-dotenv requests pydantic jinja2 python-multipart`
 
 
-2. Download Llama models (GGUF format) from Hugging Face:
+3. Download Llama models (GGUF format) from Hugging Face:
    - [llama-3.1b-instruct.Q4_K_M.gguf](https://huggingface.co/TheBloke/Llama-3.1B-Instruct-GGUF/resolve/main/llama-3.1b-instruct.Q4_K_M.gguf)
 OR use an Open source Endpoint
 
-3. Regardless of what you do in step 2, setup your model and setup your API Key as an environment variable in an .env. Then change your Endpoint address url in the TextAgent and VisionAgent. *NOTE : This is key as unless you do this the script will not work*
+4. Regardless of what you do in step 2, setup your model and setup your API Key as an environment variable in an .env. Then change your Endpoint address url in the TextAgent and VisionAgent. *NOTE : This is key as unless you do this the script will not work*
 
-4. Run the script
+5. Run the script
 
-5. Access the web interface at http://localhost:8000
+6. Access the web interface at http://localhost:8000
 
 ## Usage
 
