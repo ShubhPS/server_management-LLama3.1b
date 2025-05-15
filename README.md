@@ -13,6 +13,7 @@ A local multi-agent system using Llama models for various specialized tasks.
 ## Setup
 
 1. Install dependencies:
+'pip install fastapi uvicorn python-dotenv requests pydantic jinja2 python-multipart'
 
 
 2. Download Llama models (GGUF format) from Hugging Face:
