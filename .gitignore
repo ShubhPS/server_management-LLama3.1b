@@ -1,7 +1,5 @@
 .idea/
 .env
-test.py
-error.py
 
 static/
 tickets/
